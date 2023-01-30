@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <remoteSsns>
 	<id value="1"/>
-	<value remoteSpc="2001" remoteSsn="6" remoteSsnFlag="0" markProhibitedWhenSpcResuming="false"/>
+	<value remoteSpc="2001" remoteSsn="149" remoteSsnFlag="0" markProhibitedWhenSpcResuming="false"/>
 	<id value="2"/>
 	<value remoteSpc="2001" remoteSsn="7" remoteSsnFlag="0" markProhibitedWhenSpcResuming="false"/>
 	<id value="3"/>
