@@ -1,0 +1,75 @@
+<configuration scan="true" scanPeriod="30 seconds">
+  <conversionRule conversionWord="traceId"
+    converterClass="kamon.logback.LogbackTraceIDConverter"/>
+  <conversionRule conversionWord="apiRequestId"
+    converterClass="com.emnify.esc.common.ApiRequestIdConverter"/>
+  <conversionRule conversionWord="remoteDialogId"
+    converterClass="com.emnify.esc.common.RemoteDialogIdConverter"/>
+  <conversionRule conversionWord="localDialogId"
+    converterClass="com.emnify.esc.common.LocalDialogIdConverter"/>
+  <conversionRule conversionWord="applicationContext"
+    converterClass="com.emnify.esc.common.ApplicationContextConverter"/>
+  <conversionRule conversionWord="imsi"
+    converterClass="com.emnify.esc.common.ImsiConverter"/>
+  <conversionRule conversionWord="msisdn"
+    converterClass="com.emnify.esc.common.MsisdnConverter"/>
+
+  <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/cmap-router-json.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>logs/cmap-router-json-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <!-- or whenever the file size reaches 10MB (keep smaller than totalSizeCap, otherwise it caused some issues)-->
+      <maxFileSize>10MB</maxFileSize>
+      <!-- keep 30 Days of logs Maximum -->
+      <maxHistory>30</maxHistory>
+      <!-- unless the old logs exceed 100MB in cummulative size -->
+      <totalSizeCap>20MB</totalSizeCap>
+    </rollingPolicy>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+        <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
+        <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+        <appendLineSeparator>true</appendLineSeparator>
+        <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+          <!--prettyPrint>true</prettyPrint-->
+        </jsonFormatter>
+      </layout>
+    </encoder>
+  </appender>
+
+  <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/cmap-router.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>logs/cmap-router-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <!-- or whenever the file size reaches 10MB (keep smaller than totalSizeCap, otherwise it caused some issues)-->
+      <maxFileSize>10MB</maxFileSize>
+      <!-- keep 30 Days of logs Maximum -->
+      <maxHistory>30</maxHistory>
+      <!-- unless the old logs exceed 100MB in cummulative size -->
+      <totalSizeCap>20MB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%X{akkaTimestamp} %-5level %logger{36} %X{akkaSource} %X{machineId} %X{nodeId} | trace_id='%traceId' | api_request_id='%apiRequestId' | local_dialog_id='%localDialogId' | remote_dialog_id='%remoteDialogId' | application_context='%applicationContext' | imsi='%imsi' | msisdn='%msisdn' | message='%msg'%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%X{akkaTimestamp} %-5level %logger{36} %X{akkaSource} %X{machineId} %X{nodeId}
+        | trace_id='%traceId' | api_request_id='%apiRequestId' | local_dialog_id='%localDialogId' | remote_dialog_id='%remoteDialogId' | application_context='%applicationContext' | imsi='%imsi' | msisdn='%msisdn' |
+        | message='%msg'%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <logger name="akka.cluster" level="INFO"/>
+
+  <root level="DEBUG">
+    <appender-ref ref="JSON"/>
+    <appender-ref ref="ROLLING"/>
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+</configuration>
